@@ -1,0 +1,27 @@
+.field-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.field-container label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.field-container textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: none;
+}
+
+.field-container textarea[readonly] {
+    outline: none;
+}
+
+.field-container textarea[readonly]:hover {
+    cursor: default;
+}

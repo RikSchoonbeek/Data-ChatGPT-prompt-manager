@@ -1,0 +1,7 @@
+django >=4.2,<4.3
+django-cors-headers
+django-mptt
+djangorestframework
+psycopg2 >=2.9,<3.0
+openai
+python-dotenv
