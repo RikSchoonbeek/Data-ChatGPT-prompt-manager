@@ -13,12 +13,10 @@ class TagSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     # tags = TagSerializer(many=True, read_only=True)
     owner = serializers.PrimaryKeyRelatedField(
-        write_only=True,
         queryset=AppUser.objects.all(),
     )
     tags = serializers.PrimaryKeyRelatedField(
         many=True,
-        write_only=True,
         queryset=Tag.objects.all(),
     )
 

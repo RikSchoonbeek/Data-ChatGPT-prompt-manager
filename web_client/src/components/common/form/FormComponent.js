@@ -178,8 +178,6 @@ const FormComponent = ({
       {buttons &&
         buttons.map((button, i) => {
           const clickHandler = buttonHandlers[button.onClick];
-          console.log("buttonHandlers", buttonHandlers);
-          console.log("clickHandler", clickHandler);
           return <Button key={i} button={button} onClick={clickHandler} />;
         })}
     </form>

@@ -8,16 +8,8 @@ import "./css/chat_component.css";
 import "./css/form_component.css";
 
 function App() {
-  const {
-    notes,
-    createNote,
-    updateNote,
-    deleteNote,
-    selectedNote,
-    setSelectedNoteID,
-  } = useNotes();
+  const { notes, selectedNote } = useNotes();
 
-  console.log("selectedNote", selectedNote);
   // const [notes, setNotes] = useState(null);
   // const [title, setTitle] = useState("");
   // const [content, setContent] = useState("");

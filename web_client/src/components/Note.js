@@ -12,7 +12,7 @@ import { useNotes } from "../context/NotesContext";
 //  triggered.
 // TODO I think it would also be useful to have an indicator for unsaved changes.
 const Note = ({ note }) => {
-  const NOTE_AUTOSAVE_INTERVAL_MS = 20 * 1000;
+  const NOTE_AUTOSAVE_INTERVAL_MS = 3 * 1000;
   const [noteTitle, setNoteTitle] = useState(note.title);
   // InitialMarkdown seems necessary to set the content of the editor on first render,
   // the useEffect below doesn't seem to work for the first render
@@ -34,14 +34,31 @@ const Note = ({ note }) => {
   //    is started for the new changes.
   //    When a request is finished, it's data is cleaed from the queue.
 
+  const scheduleAutoSaveNoteRequest = () => {
+    // Schedule a save request to be executed after a delay and return an object
+    // containing the timer ID and the status of the request.
+    debugger;
+    const requestTimerID = setTimeout(
+      () => handleSaveNote(true),
+      NOTE_AUTOSAVE_INTERVAL_MS
+    );
+    return {
+      timerID: requestTimerID,
+      status: "pre-initiation",
+    };
+  };
+
   // TODO distinguish between auto save calls and manual save calls
   //    validation errors returned by auto save calls should not be
   //    displayed to the user, but validation errors from manual
   //    save calls should.
-  const handleSaveNote = () => {
+  const handleSaveNote = (autoSave = false) => {
     const noteData = {
       content: changedContent,
       title: noteTitle,
+      // TODO make tags editable.
+      tags: note.tags,
+      owner: note.owner,
       ...(note.id !== undefined ? { id: note.id } : {}),
     };
     const saveFunc = note.id !== undefined ? updateNote : createNote;
@@ -55,24 +72,18 @@ const Note = ({ note }) => {
     //    from the queue)
     saveFunc(noteData)
       .then((res) => {
-        // TODO handle
+        // TODO I don't think much needs to happen here. Maybe update some state about
+        //   there being unsaved changes left or not.
+        console.log("res", res);
       })
       .catch((err) => {
-        // TODO handle
+        // TODO see the above comments to see what to implement
+        if (autoSave) {
+          console.log("err", err);
+          alert("Auto save failed. Will retry shortly.");
+          scheduleAutoSaveNoteRequest();
+        }
       });
-  };
-
-  const scheduleSaveNoteRequest = () => {
-    // Schedule a save request to be executed after a delay and return an object
-    // containing the timer ID and the status of the request.
-    const requestTimerID = setTimeout(
-      handleSaveNote,
-      NOTE_AUTOSAVE_INTERVAL_MS
-    );
-    return {
-      timerID: requestTimerID,
-      status: "pre-initiation",
-    };
   };
 
   const getLastRequestData = () => {
@@ -102,21 +113,22 @@ const Note = ({ note }) => {
     const lastRequestData = getLastRequestData();
     if (!lastRequestData) {
       // No request in queue, schedule a new one
-      const requestData = scheduleSaveNoteRequest();
+      const requestData = scheduleAutoSaveNoteRequest();
       updateRequestQueue.current.push(requestData);
     } else if (lastRequestData.status === "in-progress") {
       // There is an in-progress request, which doesn't have the latest changes,
       // schedule a new request
-      const requestData = scheduleSaveNoteRequest();
+      const requestData = scheduleAutoSaveNoteRequest();
       updateRequestQueue.current.push(requestData);
     }
 
     // Cleanup function
     return () => {
       // Clear all scheduled requests
-      updateRequestQueue.current.forEarEach((requestData) => {
+      updateRequestQueue.current.forEach((requestData) => {
         clearTimeout(requestData.timerID);
       });
+      updateRequestQueue.current = [];
     };
   }, [changedContent, noteTitle]);
 

@@ -23,10 +23,10 @@ const useNotes = () => {
       .catch((err) => console.error(err));
   };
 
-  const createNote = (note) => {
+  const createNote = (noteData) => {
     return new Promise((resolve, reject) => {
       axios
-        .post(apiUrls.note(note.id), {})
+        .post(apiUrls.note(), noteData)
         .then((res) => {
           setNotes((prevNotes) => [...prevNotes, res.data]);
           resolve(res.data);
@@ -38,14 +38,10 @@ const useNotes = () => {
     });
   };
 
-  const updateNote = (note) => {
+  const updateNote = (noteData) => {
     return new Promise((resolve, reject) => {
       axios
-        .patch(apiUrls.note(note.id), {
-          title: note.title,
-          content: note.content,
-          tags: note.tags.map((tag) => tag.id),
-        })
+        .patch(apiUrls.note(noteData.id), noteData)
         .then((res) => {
           setNotes((prevNotes) =>
             prevNotes.map((note) =>

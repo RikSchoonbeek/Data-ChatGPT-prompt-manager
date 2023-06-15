@@ -29,6 +29,7 @@ class CreateNoteService(Service):
         return note
 
 
+@dataclass
 class UpdateNoteCommand(Command):
     id: int
     data: dict
@@ -39,8 +40,11 @@ class UpdateNoteService(Service):
     Service for updating a note.
     """
 
-    def _execute(command: Command):
+    def _execute(self, command: Command):
         note = Note.objects.get(id=command.id)
+        if 'tags' in command.data:
+            note.tags.set(command.data['tags'])
+            del command.data['tags']
         for attr, value in command.data.items():
             setattr(note, attr, value)
         note.save()

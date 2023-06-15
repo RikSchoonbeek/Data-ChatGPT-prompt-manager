@@ -36,14 +36,14 @@ class NoteViewSet(GenericViewSet):
         serializer = NoteSerializer(notes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # update may not be necessary right now
+    # update (PUT) may not be necessary right now
     
-    def partial_update(self, request, id):
+    def partial_update(self, request, pk):
         # Validate request data
         serializer = NoteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        note = UpdateNoteService()(UpdateNoteCommand(id=id, data=serializer.validated_data))
+        note = UpdateNoteService()(UpdateNoteCommand(id=pk, data=serializer.validated_data))
 
         response_serializer = NoteSerializer(note)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
@@ -53,7 +53,7 @@ class NoteViewSet(GenericViewSet):
         note.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    def retrieve(self, request, id):
+    def retrieve(self, request, pk):
         note = Note.objects.get(id=id)
         serializer = NoteSerializer(note)
         return Response(serializer.data, status=status.HTTP_200_OK)
