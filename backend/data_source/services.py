@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Optional
 
 from core.services import Command, Service
 from data_source.models import Note, Tag
@@ -33,6 +33,7 @@ class CreateNoteService(Service):
 class UpdateNoteCommand(Command):
     id: int
     data: dict
+    note: Optional[Note] = None
 
 
 class UpdateNoteService(Service):
@@ -41,7 +42,7 @@ class UpdateNoteService(Service):
     """
 
     def _execute(self, command: Command):
-        note = Note.objects.get(id=command.id)
+        note = command.note if command.note else Note.objects.get(id=command.id)
         if 'tags' in command.data:
             note.tags.set(command.data['tags'])
             del command.data['tags']

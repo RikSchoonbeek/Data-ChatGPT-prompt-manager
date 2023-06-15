@@ -40,12 +40,13 @@ class NoteViewSet(GenericViewSet):
     
     def partial_update(self, request, pk):
         # Validate request data
-        serializer = NoteSerializer(data=request.data)
+        note = Note.objects.get(id=pk)
+        serializer = NoteSerializer(note, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        note = UpdateNoteService()(UpdateNoteCommand(id=pk, data=serializer.validated_data))
+        updated_note = UpdateNoteService()(UpdateNoteCommand(id=pk, data=serializer.validated_data, note=note))
 
-        response_serializer = NoteSerializer(note)
+        response_serializer = NoteSerializer(updated_note)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
     
     def destroy(self, request, pk):

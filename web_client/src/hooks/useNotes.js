@@ -39,15 +39,20 @@ const useNotes = () => {
   };
 
   const updateNote = (noteData) => {
+    console.log("updateNote, noteData", noteData);
+    console.log("selectedNoteID", selectedNoteID);
     return new Promise((resolve, reject) => {
       axios
         .patch(apiUrls.note(noteData.id), noteData)
         .then((res) => {
-          setNotes((prevNotes) =>
-            prevNotes.map((note) =>
-              note.id === selectedNoteID.id ? res.data : note
-            )
-          );
+          console.log("res.data", res.data);
+          setNotes((prevNotes) => {
+            const updatedNotes = prevNotes.map((note) =>
+              note.id === selectedNoteID ? res.data : note
+            );
+            console.log("updatedNotes", updatedNotes);
+            return updatedNotes;
+          });
           resolve(res.data);
         })
         .catch((err) => reject(err));

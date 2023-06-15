@@ -6,15 +6,27 @@
 }
 
 .side-bar {
-    flex: 0 0 200px;
+    flex-basis: 200px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.main-content-container {
+    flex: 0 0 auto;
 }
 
 .note-list-container {
     display: flex;
     flex-direction: column;
-    flex: 0 0 100%;
+    width: 100%;
 
     background-color: cadetblue;
     padding: 5px;
     height: 100%;
 }
+
+/* .note-list-item-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */

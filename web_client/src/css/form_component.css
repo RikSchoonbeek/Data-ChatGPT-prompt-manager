@@ -25,3 +25,12 @@
 .field-container textarea[readonly]:hover {
     cursor: default;
 }
+
+.editable-text {
+    border: none;
+    outline: none;
+    cursor: text;
+    background-color: transparent;
+    font-weight: bold;
+    width: 100%;
+}

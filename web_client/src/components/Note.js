@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 
 import { Editable, useEditor } from "@wysimark/react";
 
+import EditableText from "./common/form/EditableText";
 import { useNotes } from "../context/NotesContext";
 
 // TODO I think the current autosave mechanism could break if the note
@@ -136,7 +137,13 @@ const Note = ({ note }) => {
 
   return (
     <div className="note">
-      <h1>{note.title}</h1>
+      <EditableText
+        value={noteTitle}
+        onChange={(name, value) => {
+          console.log("name, value", name, value);
+          setNoteTitle(value);
+        }}
+      />
       <Editable
         editor={editor}
         onChange={() => setChangedContent(editor.getMarkdown())}
