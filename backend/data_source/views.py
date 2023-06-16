@@ -12,8 +12,9 @@ from .services import (
 )
 
 
-
 class NoteViewSet(GenericViewSet):
+
+    queryset = Note.objects.filter(deleted_dt=None)
 
     def create(self, request):
         # Validate request data
@@ -32,7 +33,7 @@ class NoteViewSet(GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def list(self, request):
-        notes = Note.objects.filter(owner_id=1)
+        notes = self.queryset.filter(owner_id=1)
         serializer = NoteSerializer(notes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -40,7 +41,7 @@ class NoteViewSet(GenericViewSet):
     
     def partial_update(self, request, pk):
         # Validate request data
-        note = Note.objects.get(id=pk)
+        note = self.queryset.get(id=pk)
         serializer = NoteSerializer(note, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
@@ -50,11 +51,11 @@ class NoteViewSet(GenericViewSet):
         return Response(response_serializer.data, status=status.HTTP_200_OK)
     
     def destroy(self, request, pk):
-        note = Note.objects.get(id=pk)
+        note = self.queryset.get(id=pk)
         note.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     def retrieve(self, request, pk):
-        note = Note.objects.get(id=id)
+        note = self.queryset.get(id=id)
         serializer = NoteSerializer(note)
         return Response(serializer.data, status=status.HTTP_200_OK)
