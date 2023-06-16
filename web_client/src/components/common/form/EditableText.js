@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const EditableText = ({ name, value, onChange }) => {
+const EditableText = ({ name, value, onChange, onSave }) => {
   // Text displayed as normal text with an edit button. When the edit button is
   // clicked, the text is replaced with an input field and a save button. On save
   // the onChange function (prop) is called with the new value so that the parent
@@ -23,10 +23,11 @@ const EditableText = ({ name, value, onChange }) => {
   const handleSave = () => {
     setIsEditing(false);
     onChange(name, inputValue);
+    onSave();
   };
 
   return (
-    <div>
+    <div className="editable-text-container">
       {isEditing ? (
         <>
           <input type="text" value={inputValue} onChange={handleChange} />
@@ -34,7 +35,7 @@ const EditableText = ({ name, value, onChange }) => {
         </>
       ) : (
         <>
-          <div>{value}</div>
+          <div className="text-div">{value}</div>
           <button onClick={handleEdit}>Edit</button>
         </>
       )}

@@ -5,6 +5,8 @@ import { Editable, useEditor } from "@wysimark/react";
 import EditableText from "./common/form/EditableText";
 import { useNotes } from "../context/NotesContext";
 
+import "../css/note.css";
+
 // TODO I think the current autosave mechanism could break if the note
 //  being provided changes, as a planned update call will use the data of
 //  the new note, not the old one. I need to come up with a solution that
@@ -13,7 +15,7 @@ import { useNotes } from "../context/NotesContext";
 //  triggered.
 // TODO I think it would also be useful to have an indicator for unsaved changes.
 const Note = ({ note }) => {
-  const NOTE_AUTOSAVE_INTERVAL_MS = 3 * 1000;
+  const NOTE_AUTOSAVE_INTERVAL_MS = 5 * 1000;
   const [noteTitle, setNoteTitle] = useState(note.title);
   // InitialMarkdown seems necessary to set the content of the editor on first render,
   // the useEffect below doesn't seem to work for the first render
@@ -24,8 +26,13 @@ const Note = ({ note }) => {
   const updateRequestQueue = useRef([]);
   const { createNote, updateNote } = useNotes();
 
+  const updateToNewNote = (newNote) => {
+    editor.resetMarkdown(note.content);
+    setNoteTitle(newNote.title);
+  };
+
   // Set initial content of editor when note changes
-  useEffect(() => editor.resetMarkdown(note.content), [note.id]);
+  useEffect(() => updateToNewNote(note), [note.id]);
 
   // TODO I am thinking about another solution in which a queue is used.
   //    The queue will contain a maximum of two requests. Each pre-initiation save request
@@ -54,6 +61,7 @@ const Note = ({ note }) => {
   //    displayed to the user, but validation errors from manual
   //    save calls should.
   const handleSaveNote = (autoSave = false) => {
+    // Send request to save note to server, an update if existing note, create if new note.
     const noteData = {
       content: changedContent,
       title: noteTitle,
@@ -136,19 +144,24 @@ const Note = ({ note }) => {
   // TODO make sure a save request is initiated on unmount
 
   return (
-    <div className="note">
+    <div className="note-container">
       <EditableText
         value={noteTitle}
         onChange={(name, value) => {
           console.log("name, value", name, value);
           setNoteTitle(value);
         }}
+        onSave={handleSaveNote}
       />
-      <Editable
-        editor={editor}
-        onChange={() => setChangedContent(editor.getMarkdown())}
-      />
-      <button onClick={handleSaveNote}>Save</button>
+      <div className="markdown-editor-container">
+        <Editable
+          editor={editor}
+          onChange={() => setChangedContent(editor.getMarkdown())}
+        />
+      </div>
+      <div className="button-bar">
+        <button onClick={handleSaveNote}>Save</button>
+      </div>
     </div>
   );
 };
